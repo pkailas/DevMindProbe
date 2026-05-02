@@ -14,3 +14,6 @@ obj/
 # OS junk
 Thumbs.db
 .DS_Store
+
+# Claude Code working directory
+.claude/

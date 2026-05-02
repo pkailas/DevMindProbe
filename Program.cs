@@ -325,6 +325,45 @@ namespace DevMindProbe
                         return sb.Length > 0 ? sb.ToString() : $"No matches for '{pattern}' in {filePattern} under {searchDir}";
                     }
 
+                    case "list_files":
+                    {
+                        tc.Arguments!.TryGetValue("glob", out string? glob);
+                        tc.Arguments!.TryGetValue("recursive", out string? recursiveStr);
+                        bool recursive = recursiveStr == null || bool.TryParse(recursiveStr, out bool r) && r;
+                        var dir = @"C:\Users\pkailas\source\repos\DevMindTestBed";
+                        var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                        var excludedSegments = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                            { "bin", "obj", ".vs", ".git", "node_modules", "packages" };
+                        // Split glob into dir prefix + file pattern (e.g. "Services/*.cs")
+                        string normalizedGlob = (glob ?? "").Replace('\\', '/');
+                        string filePattern = normalizedGlob;
+                        string effectiveRoot = dir;
+                        int lastSlash = normalizedGlob.LastIndexOf('/');
+                        if (lastSlash >= 0)
+                        {
+                            string dirPart = normalizedGlob.Substring(0, lastSlash);
+                            filePattern = normalizedGlob.Substring(lastSlash + 1);
+                            string candidate = Path.Combine(dir, dirPart.Replace('/', Path.DirectorySeparatorChar));
+                            if (Directory.Exists(candidate))
+                                effectiveRoot = candidate;
+                        }
+                        try
+                        {
+                            var matches = Directory.EnumerateFiles(effectiveRoot, filePattern, searchOption)
+                                .Where(p => !p.Split(new[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries)
+                                              .Any(seg => excludedSegments.Contains(seg)))
+                                .Select(Path.GetFullPath)
+                                .OrderBy(p => p, StringComparer.OrdinalIgnoreCase)
+                                .Take(200)
+                                .ToList();
+                            return matches.Count == 0 ? "[no matches]" : string.Join(Environment.NewLine, matches);
+                        }
+                        catch (Exception ex)
+                        {
+                            return $"[ERROR: {ex.Message}]";
+                        }
+                    }
+
                     case "run_shell":
                         return "ERROR: run_shell disabled in probe";
 
