@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>12</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <!-- PROBE symbol disables VS-specific code paths in sourced DevMind files -->
+    <DefineConstants>PROBE</DefineConstants>
+    <RootNamespace>DevMind</RootNamespace>
+    <AssemblyName>DevMindProbe</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <!-- Probe-local source files -->
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="DevMindOptions.Probe.cs" />
+  </ItemGroup>
+
+  <!-- Source-linked DevMind files (compiled directly, no VS DLLs required) -->
+  <ItemGroup>
+    <Compile Include="..\DevMind\DevMindOptions.Data.cs"  Link="DevMind\DevMindOptions.Data.cs" />
+    <Compile Include="..\DevMind\LlmClient.cs"            Link="DevMind\LlmClient.cs" />
+    <Compile Include="..\DevMind\ToolCallResult.cs"       Link="DevMind\ToolCallResult.cs" />
+    <Compile Include="..\DevMind\ToolRegistry.cs"         Link="DevMind\ToolRegistry.cs" />
+    <Compile Include="..\DevMind\ToolCallMapper.cs"       Link="DevMind\ToolCallMapper.cs" />
+    <Compile Include="..\DevMind\ResponseParser.cs"       Link="DevMind\ResponseParser.cs" />
+    <Compile Include="..\DevMind\ResponseClassifier.cs"   Link="DevMind\ResponseClassifier.cs" />
+    <Compile Include="..\DevMind\ResponseOutcome.cs"      Link="DevMind\ResponseOutcome.cs" />
+    <Compile Include="..\DevMind\ExecutionResult.cs"      Link="DevMind\ExecutionResult.cs" />
+    <Compile Include="..\DevMind\StringValidator.cs"      Link="DevMind\StringValidator.cs" />
+    <Compile Include="..\DevMind\FileContentCache.cs"     Link="DevMind\FileContentCache.cs" />
+    <Compile Include="..\DevMind\NearlineCache.cs"        Link="DevMind\NearlineCache.cs" />
+    <Compile Include="..\DevMind\MemoryManager.cs"        Link="DevMind\MemoryManager.cs" />
+  </ItemGroup>
+
+</Project>
